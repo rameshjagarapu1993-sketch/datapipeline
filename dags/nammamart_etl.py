@@ -9,7 +9,7 @@ from airflow.sdk import dag, get_current_context, task
 from airflow.utils.trigger_rule import TriggerRule
 
 
-INCLUDE_DIR = Path("/usr/local/airflow/include")
+INCLUDE_DIR = Path(__file__).resolve().parents[1] / "include"
 if str(INCLUDE_DIR) not in sys.path:
     sys.path.insert(0, str(INCLUDE_DIR))
 

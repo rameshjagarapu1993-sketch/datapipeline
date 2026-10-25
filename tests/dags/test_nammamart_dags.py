@@ -23,3 +23,41 @@ def test_nammamart_schedule_and_reliability_defaults() -> None:
         assert dag.default_args["retry_delay"].total_seconds() == 120
         assert dag.default_args["execution_timeout"].total_seconds() == 2700
         assert dag.max_active_runs == 1
+
+
+def test_nammamart_etl_graph_connects_each_pipeline_stage() -> None:
+    dag = DAG_BAG.get_dag("nammamart_etl")
+    assert dag is not None
+
+    extract_tasks = {
+        "extract_orders",
+        "extract_payments",
+        "extract_customers",
+        "extract_products",
+        "extract_stores",
+        "extract_increment",
+    }
+    assert extract_tasks.issubset(dag.task_ids)
+    assert dag.get_task("validate_sources").upstream_task_ids == extract_tasks
+    assert dag.get_task("quarantine").upstream_task_ids == {"validate_sources"}
+    assert dag.get_task("transform_and_load").upstream_task_ids == {"quarantine"}
+    assert dag.get_task("report").upstream_task_ids == {"transform_and_load"}
+    assert dag.get_task("audit_run").upstream_task_ids == {"report"}
+
+
+def test_nammamart_elt_graph_connects_each_pipeline_stage() -> None:
+    dag = DAG_BAG.get_dag("nammamart_elt")
+    assert dag is not None
+
+    extract_tasks = {
+        "extract_orders",
+        "extract_payments",
+        "extract_customers",
+        "extract_products",
+        "extract_stores",
+        "extract_increment",
+    }
+    assert extract_tasks.issubset(dag.task_ids)
+    assert dag.get_task("load_raw_and_transform").upstream_task_ids == extract_tasks
+    assert dag.get_task("report").upstream_task_ids == {"load_raw_and_transform"}
+    assert dag.get_task("audit_run").upstream_task_ids == {"report"}

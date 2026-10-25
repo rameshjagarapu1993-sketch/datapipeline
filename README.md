@@ -3,6 +3,45 @@ Overview
 
 Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
 
+NammaMart ETL and ELT Outputs
+=============================
+
+This project includes two NammaMart Airflow pipelines: `nammamart_etl` and
+`nammamart_elt`. In the Airflow UI, open **Browse > DAG Runs** (or the DAG's
+Grid view), select a run, and check the task logs for its row counts and
+warehouse report.
+
+**Where to find passed data**
+
+- **ETL passed-row CSVs:** `include/work/nammamart/<run_id>/`. For example,
+  `include/work/nammamart/manual__2026-10-20T05_42_05.875822_00_00/customers_passed.csv`.
+  The same run folder contains `orders_passed.csv`, `payments_passed.csv`,
+  `products_passed.csv`, and `stores_passed.csv`; when the optional increment
+  file is present, it also contains `orders_increment_passed.csv`.
+- **ETL final output:** successfully validated and transformed order rows are
+  in `etl_fact_orders` in `include/warehouse_nammamart.duckdb`. Reporting
+  tables include `etl_daily_zone_revenue` and `etl_category_margin`.
+- **ELT output:** the `nammamart_elt` DAG retains source rows in raw tables,
+  including rows that need review. Use the cleaned `stg_orders` table for
+  staged orders and `mart_daily_store_kpis` or `mart_category_margin` for
+  reporting results in the same DuckDB warehouse.
+- **Failed rows:** per-run quarantine CSVs are under
+  `include/quarantine/nammamart/<run_id>/`; the ETL and ELT database tables
+  are `etl_quarantine` and `elt_quarantine`, respectively.
+
+The ETL `*_passed.csv` files are validation outputs (before final warehouse
+transformations), not the reporting layer. To inspect the final ETL rows or
+ELT staged rows, query the DuckDB tables. For example, from the project root:
+
+```python
+import duckdb
+
+connection = duckdb.connect("include/warehouse_nammamart.duckdb", read_only=True)
+print(connection.execute("SELECT * FROM etl_fact_orders LIMIT 10").df())
+print(connection.execute("SELECT * FROM stg_orders LIMIT 10").df())
+connection.close()
+```
+
 Project Contents
 ================
 
