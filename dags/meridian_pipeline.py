@@ -31,9 +31,9 @@ import pandas as pd
 import duckdb
 import json
 
-DATA_DIR       = "/usr/local/airflow/include/data"
-WAREHOUSE_DB   = "/usr/local/airflow/include/warehouse.duckdb"
-QUARANTINE_DIR = "/usr/local/airflow/include/quarantine"
+DATA_DIR       = "C:\\Users\\User\\Downloads\\IIT_Roorkie_CEC_Futurenece_Data_Pipeline_to_ML_Model\\include\\data"
+WAREHOUSE_DB   = "C:\\Users\\User\\Downloads\\IIT_Roorkie_CEC_Futurenece_Data_Pipeline_to_ML_Model\\include\\warehouse.duckdb"
+QUARANTINE_DIR = "C:\\Users\\User\\Downloads\\IIT_Roorkie_CEC_Futurenece_Data_Pipeline_to_ML_Model\\include\\quarantine"
 
 default_args = {
     "owner": "fde-cohort",

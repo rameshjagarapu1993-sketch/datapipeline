@@ -13,3 +13,9 @@ airflow.db
 .astro/*.local.yml
 .astro/*.local.yaml
 test_api.py 
+
+# NammaMart run artifacts can contain raw customer data.
+/include/warehouse_nammamart.duckdb
+/include/warehouse_nammamart.lock
+/include/work/nammamart/
+/include/quarantine/nammamart/
